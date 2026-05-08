@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AuntyPelz AI360</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#0f172a;
+      color:white;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      margin:0;
+    }
+
+    .card{
+      background:#111827;
+      padding:40px;
+      border-radius:20px;
+      text-align:center;
+      width:500px;
+    }
+
+    h1{
+      margin-bottom:15px;
+    }
+
+    p{
+      color:#cbd5e1;
+      line-height:1.7;
+    }
+
+    a{
+      display:inline-block;
+      margin-top:25px;
+      padding:14px 22px;
+      background:#14b8a6;
+      color:white;
+      text-decoration:none;
+      border-radius:10px;
+      font-weight:bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>AuntyPelz AI360</h1>
+
+  <p>
+    AI-powered 360 feedback, OKR tracking and people intelligence platform.
+  </p>
+
+  <a href="auntypelz-ai360.html">
+    Open Project
+  </a>
+</div>
+
+</body>
+</html>

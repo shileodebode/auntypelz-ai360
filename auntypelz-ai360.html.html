@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="AuntyPelz AI 360 — Deep Dive. AI-powered 360° feedback, OKR tracking and people intelligence platform built by Curacel. Prepared by Adeshile Odebode, May 2026.">
+<meta property="og:title" content="AuntyPelz AI 360 — Agent Deep Dive">
+<meta property="og:description" content="AI-powered 360° feedback, OKR tracking and people intelligence platform. Trial deliverable by Adeshile Odebode.">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuntyPelz AI 360 — Agent Deep Dive</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3248;
+    --accent: #6c63ff;
+    --accent2: #00c9a7;
+    --accent3: #f59e0b;
+    --accent4: #ef4444;
+    --text: #e8eaf6;
+    --muted: #8b90b8;
+    --label: #c5c8e8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: linear-gradient(135deg, #1a1d27 0%, #12142a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 36px 48px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(108,99,255,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(108,99,255,0.15);
+    border: 1px solid rgba(108,99,255,0.3);
+    color: #a89fff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+  .header-tag::before { content: '◉'; font-size: 8px; color: var(--accent2); }
+  .doc-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .doc-header h1 span { color: var(--accent); }
+  .header-sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .header-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill {
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .pill-green { background: rgba(0,201,167,0.1); border-color: rgba(0,201,167,0.35); color: #00c9a7; }
+  .pill-purple { background: rgba(108,99,255,0.1); border-color: rgba(108,99,255,0.35); color: #a89fff; }
+  .pill-amber { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.35); color: #fbbf24; }
+  .pill-blue { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.35); color: #60a5fa; }
+
+  .header-byline {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .header-byline strong { color: var(--label); }
+
+  /* ── NAV ── */
+  .page-nav {
+    display: flex;
+    gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 14px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .nav-tab:hover { color: var(--label); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── LAYOUT ── */
+  .page { display: none; padding: 36px 48px 60px; max-width: 1200px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* ── SECTION TITLES ── */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--label);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  /* ── KPI STRIP ── */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .kpi-number {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .kpi-card.accent-green { border-top: 3px solid var(--accent2); }
+  .kpi-card.accent-purple { border-top: 3px solid var(--accent); }
+  .kpi-card.accent-amber { border-top: 3px solid var(--accent3); }
+  .kpi-card.accent-blue { border-top: 3px solid #60a5fa; }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid rgba(46,50,72,0.5);
+    color: var(--label);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(108,99,255,0.04); }
+
+  /* ── TIMELINE ── */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 8px; bottom: 8px;
+    width: 2px;
+    background: var(--border);
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -21px;
+    top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--bg);
+  }
+  .tl-phase {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .tl-date { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .tl-lead { font-size: 12px; color: #60a5fa; margin-bottom: 6px; font-weight: 600; }
+  .tl-bullets { list-style: none; }
+  .tl-bullets li {
+    font-size: 13px;
+    color: var(--label);
+    padding: 2px 0;
+    display: flex;
+    gap: 8px;
+  }
+  .tl-bullets li::before { content: '→'; color: var(--muted); flex-shrink: 0; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    padding: 20px 0;
+  }
+  .flow-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 110px;
+  }
+  .flow-node .fn-icon { font-size: 20px; margin-bottom: 4px; }
+  .flow-node .fn-label { font-size: 11px; font-weight: 700; color: var(--label); }
+  .flow-node .fn-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 18px;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+
+  /* ── STATUS BADGE ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .badge-green { background: rgba(0,201,167,0.15); color: #00c9a7; }
+  .badge-amber { background: rgba(245,158,11,0.15); color: #fbbf24; }
+  .badge-red { background: rgba(239,68,68,0.15); color: #f87171; }
+  .badge-blue { background: rgba(59,130,246,0.15); color: #60a5fa; }
+  .badge-gray { background: rgba(139,144,184,0.15); color: var(--muted); }
+
+  /* ── RISK ITEM ── */
+  .risk-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(46,50,72,0.5);
+    align-items: flex-start;
+  }
+  .risk-item:last-child { border-bottom: none; }
+  .risk-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .risk-dot.red { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+  .risk-dot.amber { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+  .risk-dot.blue { background: #60a5fa; }
+  .risk-title { font-size: 13px; font-weight: 700; color: var(--label); margin-bottom: 4px; }
+  .risk-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ── ROADMAP ITEM ── */
+  .roadmap-item {
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(46,50,72,0.5);
+    align-items: flex-start;
+  }
+  .roadmap-item:last-child { border-bottom: none; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.6;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout-purple { background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.25); }
+  .callout-amber { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+  .callout-green { background: rgba(0,201,167,0.08); border: 1px solid rgba(0,201,167,0.25); }
+  .callout p { margin: 0; color: var(--label); }
+  .callout strong { color: #fff; }
+
+  /* ── OWNER CARD ── */
+  .owner-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    background: var(--surface2);
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .owner-avatar {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .owner-name { font-size: 14px; font-weight: 700; color: var(--label); }
+  .owner-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .owner-contrib { font-size: 12px; color: #a89fff; margin-top: 6px; line-height: 1.5; }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 16px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .doc-footer strong { color: var(--label); }
+
+  @media (max-width: 768px) {
+    .doc-header, .page-nav, .page, .doc-footer { padding-left: 20px; padding-right: 20px; }
+    .kpi-strip { grid-template-columns: 1fr 1fr; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="header-tag">Agent Deep Dive · Trial Deliverable</div>
+  <h1><span>AuntyPelz</span> AI 360</h1>
+  <div class="header-sub">AI-Powered 360° Feedback, OKR Tracking & People Intelligence Platform</div>
+  <div class="header-pills">
+    <span class="pill pill-green">● Live & Active</span>
+    <span class="pill pill-purple">People Ops</span>
+    <span class="pill pill-amber">Phase 4 Complete</span>
+    <span class="pill pill-blue">Python · Flask · GPT-4 · ReportLab</span>
+  </div>
+  <div class="header-byline">
+    Prepared by <strong>Adeshile Odebode</strong> &nbsp;·&nbsp; Head of AI Ops Candidate &nbsp;·&nbsp; Based on available documentation audit &nbsp;·&nbsp; May 2026
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="page-nav">
+  <div class="nav-tab active" onclick="showPage('overview', event)">Overview</div>
+  <div class="nav-tab" onclick="showPage('how-it-works', event)">How It Works</div>
+  <div class="nav-tab" onclick="showPage('ownership', event)">Ownership & History</div>
+</div>
+
+<!-- ══════════════ PAGE 1: OVERVIEW ══════════════ -->
+<div class="page active" id="page-overview">
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip" style="margin-top: 32px;">
+    <div class="kpi-card accent-green">
+      <div class="kpi-number">4</div>
+      <div class="kpi-label">Phases Shipped</div>
+    </div>
+    <div class="kpi-card accent-purple">
+      <div class="kpi-number">3</div>
+      <div class="kpi-label">Core Contributors</div>
+    </div>
+    <div class="kpi-card accent-amber">
+      <div class="kpi-number">9+</div>
+      <div class="kpi-label">Integrations</div>
+    </div>
+    <div class="kpi-card accent-blue">
+      <div class="kpi-number">~10mo</div>
+      <div class="kpi-label">Build Duration</div>
+    </div>
+  </div>
+
+  <div class="callout callout-purple">
+    <div class="callout-icon">💡</div>
+    <p><strong>What is AuntyPelz AI 360?</strong><br>
+    AuntyPelz is Curacel's internally built people intelligence platform. It automates the 360-degree feedback cycle — reading raw peer feedback from Google Sheets, running GPT-4 analysis, and generating branded PDF reports complete with radar charts and competency scores. It has since expanded into a full web dashboard covering OKR management, role competency tracking, and Slack-triggered reminders. It is live, in active use, and the most evolved AI system in the People Ops function.</p>
+  </div>
+
+  <div class="section-title">What Problem It Solves</div>
+  <div class="two-col" style="margin-bottom: 28px;">
+    <div class="card">
+      <div class="card-title"><div class="icon" style="background:rgba(239,68,68,0.15)">⏱</div> Before AuntyPelz</div>
+      <ul class="tl-bullets">
+        <li>Feedback synthesis was done manually by HR</li>
+        <li>Reports were inconsistent across cycles and reviewers</li>
+        <li>No structured competency scoring or visual output</li>
+        <li>OKR tracking was disconnected from feedback data</li>
+        <li>No audit trail for LLM performance or cost</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="icon" style="background:rgba(0,201,167,0.15)">✓</div> After AuntyPelz</div>
+      <ul class="tl-bullets">
+        <li>Fully automated pipeline from raw data → branded PDF</li>
+        <li>Consistent AI synthesis across every employee and cycle</li>
+        <li>Radar charts, Start/Stop/Continue themes, competency scores</li>
+        <li>Web dashboard for HR, team leads, and admins</li>
+        <li>LLM observability via Langfuse (cost, quality, performance)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-title">Core Capabilities</div>
+  <div class="three-col" style="margin-bottom: 28px;">
+    <div class="card">
+      <div class="card-title">📄 360 Feedback Reports</div>
+      <div style="font-size:13px; color:var(--muted); line-height:1.6">
+        Reads Google Sheets → GPT-4 synthesis → PDF with radar chart, competency scores, strengths, development areas, and Start/Stop/Continue themes. Sent via Gmail from peopleops@curacel.ai.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 360 Dashboard</div>
+      <div style="font-size:13px; color:var(--muted); line-height:1.6">
+        Web UI for managing feedback cycles, viewing and deleting reports, and controlling team lead access. Role-based: Super Admin and Team Lead tiers.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 OKR & Competency Tracking</div>
+      <div style="font-size:13px; color:var(--muted); line-height:1.6">
+        Personal and team OKR management with appraisal workflows, finalization gates, and rating systems. Role competency management linked to Google Drive folder storage.
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Non-Goals (Scope Boundaries)</div>
+  <div class="card" style="margin-bottom: 0;">
+    <table>
+      <thead><tr><th>Out of Scope</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>General survey tool</td><td>Purpose-built for structured 360 cycles only</td></tr>
+        <tr><td>Real-time feedback</td><td>Batch/cycle-based by design — not continuous</td></tr>
+        <tr><td>Third-party HR platform integration</td><td>Operates independently from Workday, BambooHR etc.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ══════════════ PAGE 2: HOW IT WORKS ══════════════ -->
+<div class="page" id="page-how-it-works">
+
+  <div class="section-title" style="margin-top: 32px;">Architecture & Data Flow</div>
+  <div class="card" style="margin-bottom: 28px;">
+    <div class="card-title">Report Generation Pipeline</div>
+    <div class="flow">
+      <div class="flow-node">
+        <div class="fn-icon">📋</div>
+        <div class="fn-label">Google Sheets</div>
+        <div class="fn-sub">Raw feedback data</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-icon">⚙️</div>
+        <div class="fn-label">Flask Backend</div>
+        <div class="fn-sub">Filter & validate</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-icon">🧠</div>
+        <div class="fn-label">GPT-4</div>
+        <div class="fn-sub">AI synthesis</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-icon">📄</div>
+        <div class="fn-label">ReportLab</div>
+        <div class="fn-sub">PDF generation</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-icon">📧</div>
+        <div class="fn-label">Gmail OAuth</div>
+        <div class="fn-sub">Email delivery</div>
+      </div>
+    </div>
+    <div style="font-size:12px; color:var(--muted); margin-top:8px; padding-top:12px; border-top:1px solid var(--border);">
+      Smart filtering applies a minimum threshold of 4–5 responses before a report is generated. Langfuse observes every GPT-4 call for cost, latency, and quality tracking.
+    </div>
+  </div>
+
+  <div class="section-title">Tech Stack</div>
+  <div class="two-col" style="margin-bottom: 28px;">
+    <div class="card">
+      <div class="card-title">Core Stack</div>
+      <table>
+        <thead><tr><th>Layer</th><th>Technology</th></tr></thead>
+        <tbody>
+          <tr><td>Backend</td><td>Python + Flask</td></tr>
+          <tr><td>AI / LLM</td><td>OpenAI GPT-4 (via API)</td></tr>
+          <tr><td>LLM Observability</td><td>Langfuse</td></tr>
+          <tr><td>PDF Generation</td><td>ReportLab + Cairo</td></tr>
+          <tr><td>Data Source</td><td>Google Sheets API</td></tr>
+          <tr><td>Database</td><td>PostgreSQL</td></tr>
+          <tr><td>Fuzzy Matching</td><td>fuzzywuzzy + python-Levenshtein</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Integrations</div>
+      <table>
+        <thead><tr><th>Service</th><th>Purpose</th><th>Auth</th></tr></thead>
+        <tbody>
+          <tr><td>Google Sheets</td><td>Feedback data source</td><td>Service account</td></tr>
+          <tr><td>OpenAI</td><td>AI feedback synthesis</td><td>API key</td></tr>
+          <tr><td>Langfuse</td><td>LLM observability</td><td>Key pair</td></tr>
+          <tr><td>Gmail</td><td>Report email delivery</td><td>OAuth token</td></tr>
+          <tr><td>Google Slides</td><td>Presentation (optional)</td><td>Service account</td></tr>
+          <tr><td>Google Drive</td><td>Competency folder storage</td><td>Service account</td></tr>
+          <tr><td>Slack</td><td>Cycle reminder dispatch</td><td>Slack API</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">Deployment</div>
+  <div class="card" style="margin-bottom: 28px;">
+    <div class="two-col">
+      <div>
+        <div class="card-title" style="margin-bottom:10px">Infrastructure</div>
+        <ul class="tl-bullets">
+          <li>CI/CD via GitHub Actions (migrated from Bitbucket Pipelines)</li>
+          <li>Flask bound to 0.0.0.0 for external access</li>
+          <li>Cairo system dependencies required for PDF/SVG rendering</li>
+          <li>Production setup scripts for Super Admin creation and employee import</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card-title" style="margin-bottom:10px">Database</div>
+        <ul class="tl-bullets">
+          <li>PostgreSQL with tables: <code style="color:#a89fff; font-size:12px">report_metadata</code>, <code style="color:#a89fff; font-size:12px">access_tokens</code></li>
+          <li><code style="color:#a89fff; font-size:12px">fix_db_tables.py</code> script for fresh deploys</li>
+          <li>Department aliases supported for team lead visibility</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">User Flows</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">HR: Generate 360 Reports</div>
+      <ol style="padding-left:18px; font-size:13px; color:var(--muted); line-height:2;">
+        <li style="color:var(--label)">Collect feedback via Google Sheets</li>
+        <li style="color:var(--label)">Admin triggers report generation for a period</li>
+        <li style="color:var(--label)">System filters for 4–5 minimum responses</li>
+        <li style="color:var(--label)">GPT-4 synthesises each person's feedback</li>
+        <li style="color:var(--label)">PDF generated with radar chart + branded format</li>
+        <li style="color:var(--label)">Report emailed — CC: peopleops@curacel.ai</li>
+      </ol>
+    </div>
+    <div class="card">
+      <div class="card-title">Team Lead: Review OKRs</div>
+      <ol style="padding-left:18px; font-size:13px; color:var(--muted); line-height:2;">
+        <li style="color:var(--label)">Sign in to the dashboard</li>
+        <li style="color:var(--label)">Navigate to team OKRs drilldown</li>
+        <li style="color:var(--label)">View objective status, key result progress</li>
+        <li style="color:var(--label)">Manage priority and finalization gates</li>
+        <li style="color:var(--label)">Run appraisal workflows for rating periods</li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ PAGE 3: OWNERSHIP & HISTORY ══════════════ -->
+<div class="page" id="page-ownership">
+
+  <div class="section-title" style="margin-top: 32px;">Team & Ownership</div>
+  <div style="margin-bottom: 28px;">
+    <div class="owner-card">
+      <div class="owner-avatar" style="background: linear-gradient(135deg,#6c63ff,#4f46e5)">D</div>
+      <div>
+        <div class="owner-name">Demilade Kolawole-Jacobs</div>
+        <div class="owner-role">Lead Developer (v2 — Dashboard) · Current primary owner</div>
+        <div class="owner-contrib">Owns the web dashboard, OKR system, role competency management, Slack reminder flows, and all production fixes post-launch. Most recent committer (April 2026).</div>
+      </div>
+    </div>
+    <div class="owner-card">
+      <div class="owner-avatar" style="background: linear-gradient(135deg,#00c9a7,#007a65)">F</div>
+      <div>
+        <div class="owner-name">Adeleke Oluwafikayomi (reedington)</div>
+        <div class="owner-role">Original Developer (v1 — Report Generator)</div>
+        <div class="owner-contrib">Built the entire initial pipeline: Google Sheets → GPT analysis → PDF generation → Gmail delivery. Integrated Langfuse for LLM observability. No recent commits.</div>
+      </div>
+    </div>
+    <div class="owner-card">
+      <div class="owner-avatar" style="background: linear-gradient(135deg,#f59e0b,#b45309)">R</div>
+      <div>
+        <div class="owner-name">Oluwadurotimi Olorode (Rotimi)</div>
+        <div class="owner-role">DevOps / Production</div>
+        <div class="owner-contrib">Handles all deployment pipelines, production environment config, dependency management (Cairo, fuzzywuzzy), and infrastructure fixes. Present across all phases.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Build History</div>
+  <div class="card">
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-phase">Phase 1 — Report Generator</div>
+        <div class="tl-date">Jul 19 – Aug 15, 2025</div>
+        <div class="tl-lead">Lead: Fikayo (reedington)</div>
+        <ul class="tl-bullets">
+          <li>360 Feedback Report Generator with value-based radar charts</li>
+          <li>Langfuse integration for LLM cost and quality observability</li>
+          <li>Enhanced PDF formatting with competency scoring</li>
+          <li>Gmail OAuth for delivery from peopleops@curacel.ai</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-phase">Phase 2 — Deployment & Infra</div>
+        <div class="tl-date">Sep 15 – Dec 24, 2025</div>
+        <div class="tl-lead">Lead: Rotimi</div>
+        <ul class="tl-bullets">
+          <li>Production pipeline deployment with system service management</li>
+          <li>Cairo system dependencies resolved for PDF rendering</li>
+          <li>Path and permission fixes for stable production operation</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-phase">Phase 3 — Web Dashboard Launch</div>
+        <div class="tl-date">Jan 17–19, 2026</div>
+        <div class="tl-lead">Lead: Demilade + Rotimi</div>
+        <ul class="tl-bullets">
+          <li>Full 360 feedback dashboard (web UI) shipped to production</li>
+          <li>Super Admin and Team Lead roles established</li>
+          <li>Department alias support, report deletion, health endpoints</li>
+          <li>PostgreSQL DB table fixes and production setup scripts</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-phase">Phase 4 — OKR System & Refinements</div>
+        <div class="tl-date">Jan 28 – Apr 28, 2026</div>
+        <div class="tl-lead">Lead: Demilade</div>
+        <ul class="tl-bullets">
+          <li>Personal and team OKR management with rating workflows</li>
+          <li>Key result appraisal, finalization gates, priority management</li>
+          <li>Role competency tracking linked to Google Drive</li>
+          <li>Slack cycle reminder dispatch flow (most recent feature)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Key Technical Decisions</div>
+  <div class="card" style="margin-bottom: 0;">
+    <table>
+      <thead><tr><th>Decision</th><th>Rationale</th></tr></thead>
+      <tbody>
+        <tr><td>Python + Flask + ReportLab</td><td>Best fit for PDF generation and Google Sheets integration at the time</td></tr>
+        <tr><td>Langfuse for LLM observability</td><td>Track GPT-4 costs, latency, and output quality across all report cycles</td></tr>
+        <tr><td>Gmail OAuth (not SMTP)</td><td>Proper authentication to send from the official peopleops@curacel.ai address</td></tr>
+        <tr><td>Web dashboard added (Phase 3)</td><td>Move from CLI-only report generation to a self-service UI for HR and team leads</td></tr>
+        <tr><td>OKR system added (Phase 4)</td><td>Extend the platform beyond 360 feedback to a broader people performance tool</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <div>AuntyPelz AI 360 &nbsp;·&nbsp; Agent Deep Dive &nbsp;·&nbsp; <strong>Trial Deliverable</strong> &nbsp;·&nbsp; Based on available documentation audit</div>
+  <div>Prepared by <strong>Adeshile Odebode</strong> &nbsp;·&nbsp; May 2026</div>
+</div>
+
+<script>
+  function showPage(id, event) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    if (event && event.target) event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
